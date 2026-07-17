@@ -1,33 +1,29 @@
-:- include('item.pl')
-:- dynamic(bagList/2) % bagList(Item, BagIdx)
+:- dynamic(bagList/2). % bagList(Item, BagIdx)
 
-startBag :-
-    retractall(bagList(_,_))
+start_inventory :-
+    retractall(bagList(_,_)),
     forall(between(0, 1, Idx), assertz(bagList(bottle_of_water, Idx))),
     forall(between(2, 3, Idx), assertz(bagList(ration, Idx))),
     forall(between(4, 19, Idx), assertz(bagList(empty, Idx))).
 
-addItem(Item) :-
+add_item(Item) :-
     bagList(empty, FirstEmpty),
     retract(bagList(_, FirstEmpty)),
     assertz(bagList(Item, FirstEmpty)),
     format("SUCCESS: Insert ~w in slot ~d ~n", [Item, FirstEmpty]),
     !.
 
-addItem(_) :-
+add_item(_) :-
     write("FAIL: Your inventory is full!"), nl.
 
 
-removeItem(Idx) :-
-    retract(bagList(_, Idx))
-    assertz(bagList(empty, Idx))
-    
-showBag :-
-    write("INVENTORY"), nl,
-    forall(between(0,19, Idx),
-        (bagList(empty, Idx) -> 
-            format("Slot ~d: [Empty Slot]~n", [Idx]))
-        ;
-        (bagList(Item, Idx) ->
-            format("Slot ~d: ~w~n", [Idx, Item]))
-    )
+remove_item(Idx) :-
+    bagList(Item, Idx), !,
+    retract(bagList(_, Idx)),
+    assertz(bagList(empty, Idx)),
+    write("SUCCESS: Remove ~w from slot ~d ~n", [Item, Idx]).
+
+remove_item(Idx) :-
+    bagList(empty, Idx),
+    write("FAIL: Slot ~d is empty~n", [Idx]).
+

@@ -1,4 +1,13 @@
-% drop_loot(Place_name, Item)
+% place(Place, Idx)
+place(military_base, 0).
+place(river, 1).
+place(aquarium, 2).
+place(apartment, 3).
+place(farm, 4).
+place(onsen, 5).
+place(temple, 6).
+
+% drop_loot(Place, Item)
 drop_loot(military_base, ration).
 drop_loot(military_base, pack_of_bullets).
 drop_loot(military_base, medicine).
@@ -11,7 +20,7 @@ drop_loot(apartment, book).
 drop_loot(farm, potato).
 drop_loot(onsen, bottle_of_water).
 
-% activity(Place_name, Activity)
+% activity(Place, Activity)
 activity(military_base, shooting_targets).
 activity(river, swimming).
 activity(onsen, bath).
@@ -19,3 +28,13 @@ activity(military_base, reading).
 activity(aquarium, reading).
 activity(apartment, reading).
 activity(farm, reading).
+activity(temple, reading).
+
+:- dynamic(current_place/1).
+current_place(empty).
+
+change_place :-
+    random(0, 7, NextIdx),
+    place(NextPlace, NextIdx),
+    retractall(current_place(_)),
+    assertz(current_place(NextPlace)).
