@@ -16,14 +16,11 @@ add_item(Item) :-
 add_item(_) :-
     write("FAIL: Your inventory is full!"), nl.
 
-
 remove_item(Idx) :-
     bagList(Item, Idx), !,
     retract(bagList(_, Idx)),
     assertz(bagList(empty, Idx)),
-    write("SUCCESS: Remove ~w from slot ~d ~n", [Item, Idx]).
 
 remove_item(Idx) :-
     bagList(empty, Idx),
-    write("FAIL: Slot ~d is empty~n", [Idx]).
 

@@ -55,40 +55,30 @@ travel_effect :-
 
 travel_effect_sunny(Character) :-
     retract(is_hypothermic(Character, _)),
-    assertz(is_hypothermic(Character, false)),
-    stats(Character, energy, Energy),
-    Energy1 is Energy - 20,
-    retract(stats(Character, energy, _)),
-    assertz(stats(Character, energy, Energy1)).
+    assertz(is_hypothermic(Character, false)),,
+    modify_stats(Character, energy, -20).
 
 travel_effect_rain(Character) :-
     retract(stats(Character, thirst, _)),
     assertz(stats(Character, thirst, 100)),
     stats(Character, energy, Energy),
-    Energy1 is Energy - 40,
-    retract(stats(Character, energy, _)),
-    assertz(stats(Character, energy, Energy1)).   
+    modify_stats(Character, energy, -40).
 
 travel_effect_light_snow(Character) :-
     stats(Character, energy, Energy),
-    Energy1 is Energy-20,
-    retract(stats(Character, energy, _)),
-    assertz(stats(Character, energy, Energy1)).
+    modify_stats(Character, energy, -20).
 
 travel_effect_heavy_snow(Character) :-
     stats(Character, energy, Energy),
-    Energy1 is Energy - 30,
-    retract(stats(Character, energy, _)),
-    assertz(stats(Character, energy, Energy1)).
+    modify_stats(Character, energy, -30).
 
 rest :-
     ensure_game_running,
     change_time,
-    Value is 100,
     retract(stats(chito, energy, _)),
-    assertz(stats(chito, energy, Value)),
+    assertz(stats(chito, energy, 100)),
     retract(stats(yuuri, energy, _)),
-    assertz(stats(yuuri, energy, Value)),
+    assertz(stats(yuuri, energy, 100)),
     write('Chito and Yuuri are full of energy!'),
     hypothermia_debuff.
 

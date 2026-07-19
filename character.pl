@@ -11,3 +11,8 @@ stats(yuuri, thirst, 100).
 stats(yuuri, energy, 100).
 stats(yuuri, health, 100).
 stats(yuuri, happiness, 100).
+
+modify_stats(Name, Stat, Delta) :-
+    retract(Name, Stat, Value),
+    Value1 is Value + Delta,
+    assertz(Name, Stat, Value1).
