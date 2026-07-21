@@ -97,6 +97,16 @@ consume(_, book) :-
 consume(_, bullets) :-
     write('They can\'t eat bullets!').
 
+consume(Character, medicine) :-
+    bag_list(medicine, Idx), !,
+    character(Character), !,
+    remove_item(Idx),
+    item_stats(medicine, _, _, Health, _),
+    modify_stats(Character, health, Health),
+    retract(is_hypothermic(Character, _)),
+    assertz(is_hypothermic(Character, false)),
+    format('~w consumed ~w and gain some stats.~n', [Character, Item]).   
+    
 consume(Character, Item) :-
     bag_list(Item, Idx), !,
     character(Character), !,
@@ -173,13 +183,23 @@ do_fun_activity(_) :-
 
 :- dynamic(loot_list/1). % loot_list([loot(Item, Quantity)])
 
-add_to_loot_list(loot(Item, Quantity)) :-
+show_loot :-
     ensure_game_running,
+    loot_list[List],
+    show_list[List].
+
+show_list(loot_list([loot(Item, Quantity) | Tail])):-
+    format("~w: ~d~n", [Item, Quantity]),
+    shoow_loot(loot_list(Tail)).
+
+show_list(loot_list([])).
+
+add_to_loot_list(loot(Item, Quantity)) :-
     loot_list(CurrentLoot),
     retract(loot_list(_)),
     assertz(loot_list([loot(Item, Quantity) | CurrentLoot])).
 
-remove_from_loot_list(Item) :-
+take_loot(Item) :-
     ensure_game_running,
     loot_list(_),
     take_one_loot(Item, List, NewList),
@@ -223,8 +243,7 @@ depletion :-
 depletion_implement(Character) :-
     modify_stats(Character, hunger, -10),
     modify_stats(Character, thirst, -15),
-    modify_stats(Character, energy, -20),
-    modify_stats(Character, happiness, -10).
+    modify_stats(Character, happiness, -5).
 
 happy_ending :-
     day(30), !,

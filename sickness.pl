@@ -9,24 +9,26 @@ is_hypothermic(yuuri, false).
 
 give_sickness(Character) :-
     random(0, 3, Chance),
-    stats(Character, health, Health),
-    stats(Character, happiness, Happiness),
     ( 
         Chance < 1 -> 
-            Health1 is Health -90, 
-            Happiness1 is Happiness -50,
-            format("~w broke her leg!~n", [Character]);
+            Sickness = broken_leg;
 
-            Health1 is Health -10, 
-            Happiness1 is Happiness -10,
-            format("~w got a scratch!~n", [Character])
-
+            Sickness = scratch
     ),
-    retract(stats(Character, health, _)),
-    assertz(stats(Character, health, Health1)),
-    retract(stats(Character, happiness, _)),
-    assertz(stats(Character, happiness, Happiness1)),
-    format("~w's health and happiness decreases~n", [Character]).
+    sickness(Sickness, Health, InjuredHappiness, FriendHappiness)
+    modify_stats(Character, health, Health),
+    modify_stats(Character, happiness, InjuredHappiness),
+    affect_friend_happiness(Character, FriendHappiness),
+    stats(Friend, _, _), 
+    Friend \= Character,
+    format("~w's health and happiness decreases due to ~w.~n", [Character, Sickness]),
+    format("~w also lost some hope.~n", [Friend]).
+
+affect_friend_happiness(Character, Change) :-
+    forall(
+        (stats(Friend, _, _), Friend \= Character),
+        modify_stats(Friend, happiness, Change)
+    ).
 
 give_hypothermia(Character) :- 
     stats(Character, health, Health),
