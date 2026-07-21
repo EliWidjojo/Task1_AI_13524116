@@ -4,7 +4,7 @@ item(water).
 item(fish).
 item(beer).
 item(soup).
-item(potato)
+item(potato).
 item(medicine).
 item(book).
 item(bullets).

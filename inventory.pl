@@ -19,8 +19,9 @@ add_item(_) :-
 remove_item(Idx) :-
     bag_list(Item, Idx), !,
     retract(bag_list(_, Idx)),
-    assertz(bag_list(empty, Idx)),
+    assertz(bag_list(empty, Idx)).
 
 remove_item(Idx) :-
     bag_list(empty, Idx),
+    write('It\'s already empty!').
 

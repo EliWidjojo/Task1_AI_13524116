@@ -22,6 +22,7 @@ travel_implement :-
     current_place(Place),
     day(Day),
     current_time(Time),
+    clean_loot_list,
     format('They traveled to ~w.~n', [Place]),
     format('It is currently day ~d, ~w.~n', [Day, Time]),
     write('Chito and Yuuri spent some of their energy travelling!'),
@@ -59,21 +60,18 @@ travel_effect :-
 
 travel_effect_sunny(Character) :-
     retract(is_hypothermic(Character, _)),
-    assertz(is_hypothermic(Character, false)),,
+    assertz(is_hypothermic(Character, false)),
     modify_stats(Character, energy, -20).
 
 travel_effect_rain(Character) :-
     retract(stats(Character, thirst, _)),
     assertz(stats(Character, thirst, 100)),
-    stats(Character, energy, Energy),
     modify_stats(Character, energy, -40).
 
 travel_effect_light_snow(Character) :-
-    stats(Character, energy, Energy),
     modify_stats(Character, energy, -20).
 
 travel_effect_heavy_snow(Character) :-
-    stats(Character, energy, Energy),
     modify_stats(Character, energy, -30).
 
 
@@ -92,11 +90,11 @@ rest :-
 
 % consume
 
-consume(Character, book) :-
+consume(_, book) :-
     ensure_game_running,
     write('They can\'t eat a book!').
 
-consume(Character, bullets) :-
+consume(_, bullets) :-
     write('They can\'t eat bullets!').
 
 consume(Character, Item) :-
@@ -114,7 +112,7 @@ consume(Character, Item) :-
     character(Character), !,
     format("You don't have ~w~n", [Item]).
 
-consume(_, Item):-
+consume(_, _):-
     write('Person does not exist!'), nl.
 
 % increase happiness
@@ -179,11 +177,11 @@ add_to_loot_list(loot(Item, Quantity)) :-
     ensure_game_running,
     loot_list(CurrentLoot),
     retract(loot_list(_)),
-    assertz(loot_list(CurrentLoot|loot(Item, Quantity))).
+    assertz(loot_list([loot(Item, Quantity) | CurrentLoot])).
 
 remove_from_loot_list(Item) :-
     ensure_game_running,
-    loot_list(CurrentLoot),
+    loot_list(_),
     take_one_loot(Item, List, NewList),
     retract(loot_list(List)),
     assertz(loot_list(NewList)).
@@ -198,6 +196,10 @@ take_one_loot(_, [], _) :-
     write('They don\'t have that item.'), nl,
     fail.
 
+clean_loot_list :-
+    retractall(loot_list(_)),
+    assertz(loot_list([])).
+    
 search_for_loot :-
     ensure_game_running,
     current_place(Place),
@@ -274,4 +276,3 @@ ensure_game_running :-
 ensure_game_running :-
     write('The game has ended.'), nl,
     fail.
-    
