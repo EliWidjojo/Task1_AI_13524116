@@ -20,6 +20,8 @@ change_time :-
     change_weather,
     blizzard_debuff(chito),
     blizzard_debuff(yuuri),
+    depletion,
+    bad_ending,
     happy_ending.
 
 change_time :-
@@ -28,6 +30,8 @@ change_time :-
     NextIdx is (Idx+1),
     time_of_day(Next, NextIdx),
     retract(current_time(Current)),
-    assertz(current_time(Next)).
+    assertz(current_time(Next)),
+    depletion,
+    bad_ending.
 
 

@@ -2,7 +2,7 @@
 
 start_inventory :-
     retractall(bagList(_,_)),
-    forall(between(0, 1, Idx), assertz(bagList(bottle_of_water, Idx))),
+    forall(between(0, 1, Idx), assertz(bagList(water, Idx))),
     forall(between(2, 3, Idx), assertz(bagList(ration, Idx))),
     forall(between(4, 19, Idx), assertz(bagList(empty, Idx))).
 

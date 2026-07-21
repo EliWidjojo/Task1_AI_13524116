@@ -1,3 +1,6 @@
+character(chito).
+character(yuuri).
+
 :- dynamic(stats/3).
 
 % stats(Name, Stat, Value)
@@ -13,6 +16,15 @@ stats(yuuri, health, 100).
 stats(yuuri, happiness, 100).
 
 modify_stats(Name, Stat, Delta) :-
-    retract(Name, Stat, Value),
+    retract(stats(Name, Stat, Value)),
     Value1 is Value + Delta,
-    assertz(Name, Stat, Value1).
+    clamp(Value1, Value2),
+    assertz(stats(Name, Stat, Value2)).
+
+clamp(Value, 100) :-
+    Value > 100, !.
+
+clamp(Value, 0) :-
+    Value < 0, !.
+
+clamp(Value, Value).
