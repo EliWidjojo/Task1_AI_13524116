@@ -100,7 +100,7 @@ consume(Character, bullets) :-
     write('They can\'t eat bullets!').
 
 consume(Character, Item) :-
-    bagList(Item, Idx), !,
+    bag_list(Item, Idx), !,
     character(Character), !,
     remove_item(Idx),
     item_stats(Item, Hunger, Thirst, Health, Happiness),
@@ -122,7 +122,7 @@ consume(_, Item):-
 do_fun_activity(reading) :-
     ensure_game_running,
     change_time,
-    bagList(book, Idx), !,
+    bag_list(book, Idx), !,
     remove_item(Idx),
     modify_stats(chito, happiness, 50),
     modify_stats(yuuri, happiness, 10),
@@ -134,7 +134,7 @@ do_fun_activity(reading) :-
 do_fun_activity(shooting_targets) :-
     ensure_game_running,
     change_time,
-    bagList(bullets, Idx), !,
+    bag_list(bullets, Idx), !,
     remove_item(Idx),
     modify_stats(chito, happiness, 10),
     modify_stats(yuuri, happiness, 50),
@@ -177,13 +177,13 @@ do_fun_activity(_) :-
 
 add_to_loot_list(loot(Item, Quantity)) :-
     ensure_game_running,
-    loot_List(CurrentLoot),
+    loot_list(CurrentLoot),
     retract(loot_list(_)),
     assertz(loot_list(CurrentLoot|loot(Item, Quantity))).
 
 remove_from_loot_list(Item) :-
     ensure_game_running,
-    loot_List(CurrentLoot),
+    loot_list(CurrentLoot),
     take_one_loot(Item, List, NewList),
     retract(loot_list(List)),
     assertz(loot_list(NewList)).

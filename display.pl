@@ -36,8 +36,8 @@ show_inventory :-
     write('==========================='), nl,
     forall(between(0,19, Idx),
         (
-            bagList(empty, Idx) -> format("Slot ~d: [Empty Slot]~n", [Idx]);
-            bagList(Item, Idx) -> format("Slot ~d: ~w~n", [Idx, Item])
+            bag_list(empty, Idx) -> format("Slot ~d: [Empty Slot]~n", [Idx]);
+            bag_list(Item, Idx) -> format("Slot ~d: ~w~n", [Idx, Item])
         )
     ).
 
