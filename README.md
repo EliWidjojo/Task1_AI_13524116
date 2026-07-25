@@ -1,6 +1,6 @@
 # Task1_AI_13524116
 
-![Image](https://tenor.com/view/girls-last-tour-chito-yuuri-escaletor-glt-gif-25015590)
+<img src="https://media.tenor.com/nNHsCcczQqYAAAAM/sealyx-girls-last-tour.gif" width="400">
 
 ## Lore
 <p> 
