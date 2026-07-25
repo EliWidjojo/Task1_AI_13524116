@@ -1,4 +1,4 @@
-# Task1_AI_13524116
+# Girls' Last Tour (少女終末旅行): Survival Game
 
 <img src="https://media.tenor.com/nNHsCcczQqYAAAAM/sealyx-girls-last-tour.gif" width="400">
 
