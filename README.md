@@ -1,6 +1,6 @@
 # Task1_AI_13524116
 
-<img width="220" height="124" alt="image" src="https://github.com/user-attachments/assets/730143e5-f681-479c-864c-27e74d1d7a94" />
+![Image](https://tenor.com/view/girls-last-tour-chito-yuuri-escaletor-glt-gif-25015590)
 
 ## Lore
 <p> 
