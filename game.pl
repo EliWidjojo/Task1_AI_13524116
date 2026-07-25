@@ -8,8 +8,7 @@ game_over(false).
 
 travel :-
     ensure_game_running,
-    travel_implement,
-    bad_ending.
+    travel_implement.
 
 travel_implement :-
     current_weather(blizzard), !,
@@ -19,20 +18,23 @@ travel_implement :-
     travel_effect,
     change_place,
     change_time,
-    current_place(Place),
-    day(Day),
-    current_time(Time),
-    clean_loot_list,
-    format('They traveled to ~w.~n', [Place]),
-    format('It is currently day ~d, ~w.~n', [Day, Time]),
-    write('Chito and Yuuri spent some of their energy travelling!'),
-    hypothermia_debuff(chito),
-    hypothermia_debuff(yuuri).
+    ( game_over(true) -> 
+        true;  
+        current_place(Place),
+        day(Day),
+        current_time(Time),
+        clean_loot_list,
+        write('Chito and Yuuri spent some of their energy travelling!'), nl,
+        format('They traveled to ~w.~n', [Place]),
+        format('It is currently day ~d, ~w.~n', [Day, Time]),
+        hypothermia_debuff(chito),
+        hypothermia_debuff(yuuri)
+    ).
 
 travel_effect :-
-    current_time(night), !,
+    current_time(night),
     random(0, 4, Chance),
-    random(0, 1, Character),
+    random(0, 2, Character),
     (
         Chance =:= 0 ->
             Character =:= 0 -> give_sickness(chito);
@@ -80,12 +82,17 @@ travel_effect_heavy_snow(Character) :-
 rest :-
     ensure_game_running,
     change_time,
-    retract(stats(chito, energy, _)),
-    assertz(stats(chito, energy, 100)),
-    retract(stats(yuuri, energy, _)),
-    assertz(stats(yuuri, energy, 100)),
-    write('Chito and Yuuri are full of energy!'),
-    hypothermia_debuff.
+    (game_over(true) ->
+        true;
+        retract(stats(chito, energy, _)),
+        assertz(stats(chito, energy, 100)),
+        retract(stats(yuuri, energy, _)),
+        assertz(stats(yuuri, energy, 100)),
+        write('Chito and Yuuri are full of energy!'),
+        hypothermia_debuff(chito),
+        hypothermia_debuff(yuuri)
+    ).
+
 
 
 % consume
@@ -105,7 +112,7 @@ consume(Character, medicine) :-
     modify_stats(Character, health, Health),
     retract(is_hypothermic(Character, _)),
     assertz(is_hypothermic(Character, false)),
-    format('~w consumed ~w and gain some stats.~n', [Character, Item]).   
+    format('~w consumed ~w.~n', [Character, medicine]).   
     
 consume(Character, Item) :-
     bag_list(Item, Idx), !,
@@ -116,7 +123,7 @@ consume(Character, Item) :-
     modify_stats(Character, thirst, Thirst),
     modify_stats(Character, health, Health),
     modify_stats(Character, happiness, Happiness),
-    format('~w consumed ~w and gain some stats.~n', [Character, Item]).
+    format('~w consumed ~w.~n', [Character, Item]).
 
 consume(Character, Item) :-
     character(Character), !,
@@ -130,11 +137,18 @@ consume(_, _):-
 do_fun_activity(reading) :-
     ensure_game_running,
     change_time,
-    bag_list(book, Idx), !,
-    remove_item(Idx),
-    modify_stats(chito, happiness, 50),
-    modify_stats(yuuri, happiness, 10),
-    write('Chito read a book out loud for Yuuri.'), nl.
+    (game_over(true) -> true;
+        bag_list(book, Idx), !,
+        remove_item(Idx),
+        modify_stats(chito, happiness, 50),
+        modify_stats(yuuri, happiness, 10),
+        modify_stats(chito, energy, -5),
+        modify_stats(yuuri, energy, -5),
+        write('Chito read a book out loud for Yuuri.'), nl,
+        hypothermia_debuff(chito),
+        hypothermia_debuff(yuuri)
+    ).
+
 
 do_fun_activity(reading) :-
     write('They don\'t have a book!'), nl.
@@ -142,11 +156,16 @@ do_fun_activity(reading) :-
 do_fun_activity(shooting_targets) :-
     ensure_game_running,
     change_time,
+    (game_over(true) -> true;
     bag_list(bullets, Idx), !,
     remove_item(Idx),
     modify_stats(chito, happiness, 10),
     modify_stats(yuuri, happiness, 50),
-    write('Yuuri shot some targets with Chito.'), nl.
+    modify_stats(chito, energy, -5),
+    modify_stats(yuuri, energy, -5),
+    write('Yuuri shot some targets with Chito.'), nl,
+    hypothermia_debuff(chito),
+    hypothermia_debuff(yuuri)).
 
 do_fun_activity(shooting_targets) :-
     write('They don\'t have bullets!'), nl.
@@ -155,9 +174,14 @@ do_fun_activity(swimming) :-
     ensure_game_running,
     current_place(river), !, 
     change_time,
+    (game_over(true) -> true;
     modify_stats(chito, happiness, 10),
     modify_stats(yuuri, happiness, 30),
-    write('Yuuri and Chito went swimming!').
+    modify_stats(chito, energy, -5),
+    modify_stats(yuuri, energy, -5),
+    write('Yuuri and Chito went swimming!'),
+    hypothermia_debuff(chito),
+    hypothermia_debuff(yuuri)).
 
 do_fun_activity(swimming) :-
     write('They can\'t swim in here!').
@@ -166,11 +190,16 @@ do_fun_activity(taking_a_hot_bath) :-
     ensure_game_running,
     current_place(onsen), !,
     change_time,
+    (game_over(true) -> true;
     retract(stats(chito, happiness, _)),
     assertz(stats(chito, happiness, 100)),
     retract(stats(yuuri, happiness, _)),
     assertz(stats(yuuri, happiness, 100)),
-    write('Yuuri and Chito took a hot bath.').
+    modify_stats(chito, energy, -5),
+    modify_stats(yuuri, energy, -5),
+    write('Yuuri and Chito took a hot bath.'),
+    hypothermia_debuff(chito),
+    hypothermia_debuff(yuuri)).
 
 do_fun_activity(taking_a_hot_bath) :-
     write('They can\'t take a hot bath here!').
@@ -183,30 +212,40 @@ do_fun_activity(_) :-
 
 :- dynamic(loot_list/1). % loot_list([loot(Item, Quantity)])
 
+loot_list([]).
 show_loot :-
     ensure_game_running,
-    loot_list[List],
-    show_list[List].
+    loot_list(List),
+    show_list(List).
 
-show_list(loot_list([loot(Item, Quantity) | Tail])):-
+show_list([loot(Item, Quantity) | Tail]):-
     format("~w: ~d~n", [Item, Quantity]),
-    shoow_loot(loot_list(Tail)).
-
-show_list(loot_list([])).
+    show_list(Tail).
+show_list([]).
 
 add_to_loot_list(loot(Item, Quantity)) :-
-    loot_list(CurrentLoot),
+    loot_list(List),
+    update_loot(Item, Quantity, List, NewList),
     retract(loot_list(_)),
-    assertz(loot_list([loot(Item, Quantity) | CurrentLoot])).
+    assertz(loot_list(NewList)).
 
-take_loot(Item) :-
+update_loot(Item, Quantity, [loot(Item, OldQuantity)|Tail], [loot(Item, NewQuantity)|Tail]) :-
+    NewQuantity is OldQuantity + Quantity, !.
+
+update_loot(Item, Quantity, [Head|Tail], [Head|NewTail]) :-
+    update_loot(Item,Quantity, Tail, NewTail).
+
+update_loot(Item, Quantity, [], [loot(Item, Quantity)]).
+
+take(Item) :-
     ensure_game_running,
-    loot_list(_),
+    loot_list(List),
     take_one_loot(Item, List, NewList),
     retract(loot_list(List)),
-    assertz(loot_list(NewList)).
+    assertz(loot_list(NewList)),
+    add_item(Item).
     
-take_one_loot(Item, [loot(Item, 1)|Tail], Tail).
+take_one_loot(Item, [loot(Item, 1)|Tail], Tail):- !.
 take_one_loot(Item, [loot(Item, Quantity)|Tail], [loot(Item, Q1)|Tail]) :-
     Quantity > 1,
     Q1 is Quantity - 1.
@@ -223,15 +262,21 @@ clean_loot_list :-
 search_for_loot :-
     ensure_game_running,
     current_place(Place),
-    forall(drop_loot(Place, Item), (
-        drop_rate(Item, Min, Max), 
-        random(Min, Max, Amount),
-        (Amount =\= 0 -> 
-            add_to_loot_list(loot(Item, Amount))
-            ;
-            true
-        )
-        )).
+    change_time,
+    ( game_over(true) -> 
+        true;  
+        modify_stats(chito, energy, -5),
+        modify_stats(yuuri, energy, -5),
+        write('Chito and Yuuri found some loot.'), nl,
+        forall(drop_loot(Place, Item), (
+            drop_rate(Item, Min, Max), 
+            random(Min, Max, Amount),
+            (Amount =\= 0 -> 
+                add_to_loot_list(loot(Item, Amount))
+                ;
+                true
+            )
+            ))).
 
 
 % others
@@ -263,29 +308,27 @@ bad_ending.
 
 bad_ending_checker :-
     stats(Character, hunger, 0),
-    format("~w dies from starvation!~n", [Character]), fail.
+    format("~w dies from starvation!~n", [Character]).
 
 bad_ending_checker :-
     stats(Character, thirst, 0),
-    format("~w dies from dehydration!~n", [Character]), fail.
+    format("~w dies from dehydration!~n", [Character]).
 
 bad_ending_checker :-
     stats(Character, health, 0),
-    format("~w dies from illness!~n", [Character]), fail.
+    format("~w dies from illness!~n", [Character]).
 
 bad_ending_checker :-
     stats(Character, energy, 0),
-    format("~w dies from exhaustion!~n", [Character]), fail.
+    format("~w dies from exhaustion!~n", [Character]).
 
 bad_ending_checker :-
     stats(Character, happiness, 0),
-    format("~w lost all hope and dies!~n", [Character]), fail.
-
-bad_ending_checker.
+    format("~w lost all hope and dies!~n", [Character]).
 
 ensure_game_running :-
-    game_started(true), !,
-    game_over(false).
+    game_started(true),
+    game_over(false), !.
 
 ensure_game_running :-
     game_started(false), !,

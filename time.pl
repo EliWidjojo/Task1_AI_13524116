@@ -22,7 +22,11 @@ change_time :-
     blizzard_debuff(yuuri),
     depletion,
     bad_ending,
-    happy_ending.
+    (
+        game_over(false)
+        -> happy_ending
+        ;  true
+    ).
 
 change_time :-
     current_time(Current),

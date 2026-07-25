@@ -7,21 +7,26 @@ start_inventory :-
     forall(between(4, 19, Idx), assertz(bag_list(empty, Idx))).
 
 add_item(Item) :-
-    bag_list(empty, FirstEmpty),
+    bag_list(empty, FirstEmpty), !,
     retract(bag_list(_, FirstEmpty)),
     assertz(bag_list(Item, FirstEmpty)),
-    format("SUCCESS: Insert ~w in slot ~d ~n", [Item, FirstEmpty]),
-    !.
+    format("SUCCESS: Insert ~w in slot ~d ~n", [Item, FirstEmpty]).
 
 add_item(_) :-
-    write("FAIL: Your inventory is full!"), nl.
+    write('FAIL: Your inventory is full!'), nl.
+
+throw_away(Idx):-
+    remove_item(Idx),
+    format("Throw away item in slot ~d~n", [Idx]).
 
 remove_item(Idx) :-
-    bag_list(Item, Idx), !,
+    bag_list(empty, Idx), !,
+    fail.
+
+remove_item(Idx) :-
+    bag_list(Item, Idx),
     retract(bag_list(_, Idx)),
     assertz(bag_list(empty, Idx)).
 
-remove_item(Idx) :-
-    bag_list(empty, Idx),
-    write('It\'s already empty!').
+
 

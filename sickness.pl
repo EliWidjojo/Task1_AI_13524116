@@ -1,7 +1,6 @@
 % sickness(Sickness_Name, Health, InjuredHappiness, FriendHappiness)
 sickness(broken_leg, -90, -50, -50).
 sickness(scratch, -10, -10, -5).
-sickness(hypothermia, -5, -5, -5).
 
 :- dynamic(is_hypothermic/2).
 is_hypothermic(chito, false).
@@ -15,14 +14,16 @@ give_sickness(Character) :-
 
             Sickness = scratch
     ),
-    sickness(Sickness, Health, InjuredHappiness, FriendHappiness)
+    sickness(Sickness, Health, InjuredHappiness, FriendHappiness),
     modify_stats(Character, health, Health),
     modify_stats(Character, happiness, InjuredHappiness),
     affect_friend_happiness(Character, FriendHappiness),
-    stats(Friend, _, _), 
-    Friend \= Character,
+    once((
+        stats(Friend, _, _), 
+        Friend \= Character
+    )),
     format("~w's health and happiness decreases due to ~w.~n", [Character, Sickness]),
-    format("~w also lost some hope.~n", [Friend]).
+    format("~w also lose some hope.~n", [Friend]).
 
 affect_friend_happiness(Character, Change) :-
     forall(
@@ -56,4 +57,4 @@ hypothermia_debuff(Character) :-
     retract(stats(Character, happiness, _)),
     assertz(stats(Character, happiness, Happiness1)).
 
-hypothermia_debuff(Character).
+hypothermia_debuff(_).
