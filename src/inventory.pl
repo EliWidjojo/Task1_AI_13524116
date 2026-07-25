@@ -24,7 +24,7 @@ remove_item(Idx) :-
     fail.
 
 remove_item(Idx) :-
-    bag_list(Item, Idx),
+    bag_list(_, Idx),
     retract(bag_list(_, Idx)),
     assertz(bag_list(empty, Idx)).
 
