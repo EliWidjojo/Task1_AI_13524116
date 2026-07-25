@@ -10,5 +10,5 @@ The series follows two girls, Chito and Yuuri, as they navigate the ruins of civ
 ## How to play
 1. Open gprolog
 2. Type ['src/main.pl']. in gprolog
-3. Check the files for commands
+3. Check the document for commands
 4. Take care of Chito and Yuuri <3
