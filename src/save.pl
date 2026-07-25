@@ -1,5 +1,5 @@
 save_game :-
-    open('save.txt', write, Stream),
+    open('../data/save.txt', write, Stream),
     forall(
         stats(Character, Stat, Value), 
         (write(Stream, stats(Character, Stat, Value)),
@@ -46,7 +46,7 @@ period_new_line(Stream) :-
 
 load_game :-
     clean,
-    open('save.txt', read, Stream),
+    open('../data/save.txt', read, Stream),
     read_file(Stream),
     close(Stream),
     write('SUCCESS: load game...').
