@@ -1,6 +1,6 @@
 # Task1_AI_13524116
 
-<img width="400" height="225" alt="image" src="https://github.com/user-attachments/assets/ed0dcf6c-24b1-48bd-9427-c09e45e8c452" />
+<img width="220" height="124" alt="image" src="https://github.com/user-attachments/assets/730143e5-f681-479c-864c-27e74d1d7a94" />
 
 ## Lore
 <p> 
